@@ -5,7 +5,6 @@ import { PokeMeReady } from "./PokeMeReady.sol";
 import { Ownable } from "./Ownable.sol";
 
 interface AavegotchiFacet {
-  function ownerOf(uint256 _tokenId) external view returns (address owner_);
   function tokenIdsOfOwner(address _owner) external view returns (uint32[] memory tokenIds_);
 }
 
