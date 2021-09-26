@@ -5,10 +5,22 @@
 module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
-  await deploy("YourContract", {
+
+  const petterContract =await deploy("LazyPetter", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    //args: [ "Hello", ethers.utils.parseEther("1.5") ],
+    args: [
+      "0x527a819db1eb0e34426297b03bae11F2f8B3A19E", // matic pokeme address https://docs.gelato.network/contract-addresses
+      "0x86935F11C86623deC8a25696E1C19a8659CbF95d", // matic aavegotchi diamond https://github.com/aavegotchi/aavegotchi-contracts
+      "0x26cf02F892B04aF4Cf350539CE2C77FCF79Ec172", // matic gotchi owner
+    ],
+    log: true,
+  });
+
+  const petterResolver = await deploy("LazyPetterResolver", {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+    from: deployer,
+    args: [ petterContract.address ],
     log: true,
   });
 
@@ -16,9 +28,9 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     // Getting a previously deployed contract
     const YourContract = await ethers.getContract("YourContract", deployer);
     await YourContract.setPurpose("Hello");
-  
-    To take ownership of yourContract using the ownable library uncomment next line and add the 
-    address you want to be the owner. 
+
+    To take ownership of yourContract using the ownable library uncomment next line and add the
+    address you want to be the owner.
     // yourContract.transferOwnership(YOUR_ADDRESS_HERE);
 
     //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
@@ -48,4 +60,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
   */
 };
-module.exports.tags = ["YourContract"];
+module.exports.tags = ["LazyPetterResolver", "LazyPetter"];
