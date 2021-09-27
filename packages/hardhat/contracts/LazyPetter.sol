@@ -2,7 +2,6 @@
 pragma solidity 0.8.0;
 
 import { PokeMeReady } from "./PokeMeReady.sol";
-import { Ownable } from "./Ownable.sol";
 
 interface AavegotchiFacet {
   function tokenIdsOfOwner(address _owner) external view returns (uint32[] memory tokenIds_);
@@ -12,10 +11,9 @@ interface AavegotchiGameFacet {
   function interact(uint256[] calldata _tokenIds) external;
 }
 
-contract LazyPetter is PokeMeReady, Ownable {
+contract LazyPetter is PokeMeReady {
   uint256 public lastExecuted;
   address private gotchiOwner;
-  uint256[] private gotchis;
   AavegotchiFacet private af;
   AavegotchiGameFacet private agf;
 
@@ -23,12 +21,6 @@ contract LazyPetter is PokeMeReady, Ownable {
     af = AavegotchiFacet(gotchiDiamond);
     agf = AavegotchiGameFacet(gotchiDiamond);
     gotchiOwner = _gotchiOwner;
-    gotchis = af.tokenIdsOfOwner(gotchiOwner);
-  }
-
-  function resetGotchis(address _gotchiOwner) external onlyOwner {
-    gotchiOwner = _gotchiOwner;
-    gotchis = af.tokenIdsOfOwner(gotchiOwner);
   }
 
   function petGotchis() external onlyPokeMe {
@@ -37,7 +29,12 @@ contract LazyPetter is PokeMeReady, Ownable {
       "LazyPetter: pet: 12 hours not elapsed"
     );
 
-    agf.interact(gotchis);
+    uint32[] memory gotchis = af.tokenIdsOfOwner(gotchiOwner);
+    uint256[] memory gotchiIds = new uint256[](gotchis.length);
+    for (uint i = 0; i < gotchis.length; i++) {
+      gotchiIds[i] = uint256(gotchis[i]);
+    }
+    agf.interact(gotchiIds);
 
     lastExecuted = block.timestamp;
   }
